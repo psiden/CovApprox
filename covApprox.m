@@ -15,8 +15,7 @@
 %% Run small example
 
 close all, clear all, clc
-SuiteSparsePath = '/Users/persi28/Dropbox/phd/Forskning/VarianceApproximation/qinv/Code/util';
-% SuiteSparsePath = '/home/persiden/Dropbox/phd/Forskning/VarianceApproximation/qinv/Code/util';
+SuiteSparsePath = 'Enter path to SuiteSparse';
 % rng(100);
 
 addpath('util/');
