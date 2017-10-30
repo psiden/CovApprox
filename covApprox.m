@@ -9,7 +9,7 @@
 %               Linkoping University      
 %
 % FIRST VER.:   2017-05-22
-% REVISED:
+% REVISED:      2017-10-30
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Run small example
@@ -54,6 +54,7 @@ disp('MC estimation');
 tic 
 x = sampleGMRF(G,QP,lambda,P,iP,Ns);
 s2MC = 1/Ns * sum(x.^2,2);
+s2CIMC = s2MC/Ns .* [chi2inv(.025,Ns),chi2inv(.975,Ns)];
 disp(['Time:       ',num2str(toc),' s.']);
 if compareWithExact
     maxerrMC = max(abs(s2MC ./ s2True - 1));
@@ -89,6 +90,8 @@ tic
 x = sampleGMRF(G,QP,lambda,P,iP,Ns);
 diagQ = diag(Q);
 s2SimpleRBMC = 1./diagQ + 1/Ns*sum(((Q-diag(diagQ))*x ./ diagQ).^2,2);
+s2CISimpleRBMC = (1./diagQ) + 1/Ns*(s2SimpleRBMC-(1./diagQ)) .* ...
+                   [chi2inv(.025,Ns),chi2inv(.975,Ns)];
 disp(['Time:       ',num2str(toc),' s.']);
 if compareWithExact
     maxerrSimpleRBMC = max(abs(s2SimpleRBMC ./ s2True - 1));
@@ -101,7 +104,7 @@ end
 disp('Block RBMC estimation');
 tic
 x = sampleGMRF(G,QP,lambda,P,iP,Ns);
-s2BlockRBMC = blockRBMC(nBlocks,sz,Q,x);
+[s2BlockRBMC,s2CIBlockRBMC] = blockRBMC(nBlocks,sz,Q,x);
 
 disp(['Time:       ',num2str(toc),' s.']);
 if compareWithExact

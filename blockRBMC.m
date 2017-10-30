@@ -1,7 +1,9 @@
-function [s2BlockRBMC] = blockRBMC(nBlocks,sz,Q,x)
+function [s2BlockRBMC,s2CIBlockRBMC] = blockRBMC(nBlocks,sz,Q,x)
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PURPOSE:      Block RBMC algorithm
 %               
+%               Returns estimated variances and 95% CI
+%
 %               nBlocks - number of blocks in each dimension
 %               sz - domain size
 %               Q - precision matrix
@@ -13,7 +15,7 @@ function [s2BlockRBMC] = blockRBMC(nBlocks,sz,Q,x)
 %               Linkoping University      
 %
 % FIRST VER.:   2017-05-22
-% REVISED:
+% REVISED:      2017-10-30
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -156,6 +158,7 @@ end
 
 % Estimation algorithm
 s2BlockRBMC = zeros(N,1);
+QIIinv = zeros(N,1);
 for k = 1:Ni
 
     I(k).C = C(I(k).cV,I(k).cV);
@@ -179,4 +182,9 @@ for k = 1:Ni
         MCCovar3 = MCCovar3 + 1/Ns*kappa(YincVB,i).^2;
     end
     s2BlockRBMC(I(k).Y) = MCCovar3;
+    QIIinv(I(k).Y) = diag(MCCovar2);
 end
+
+
+s2CIBlockRBMC = QIIinv + 1/Ns*(s2BlockRBMC-QIIinv) .* ...
+                  [chi2inv(.025,Ns),chi2inv(.975,Ns)];
